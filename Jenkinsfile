@@ -26,6 +26,21 @@ pipeline {
                 '''
             }
         }
+        stage('e2e tests') {
+            agent {
+                docker {
+                    image 'mcr.mirosoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            steps{
+                sh '''
+                    npm i -g serve
+                    serve -s build
+                    npx playwright test
+                '''
+            }
+        }
     } 
     post {
         always {
