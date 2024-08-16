@@ -33,7 +33,7 @@ pipeline {
                     reuseNode true
                 }
             }
-            steps{
+            steps {
                 sh '''
                     npm i -g serve
                     serve -s build
