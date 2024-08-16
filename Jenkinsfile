@@ -1,13 +1,12 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18-alpine'
-            reuseNode true
-        }
-    }
-
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 sh '''
                     ls -la
@@ -29,8 +28,7 @@ pipeline {
         stage('e2e tests') {
             agent {
                 docker {
-                    // image 'mcr.microsoft.com/playwright:v1.46.0-jammy'
-                    image 'node:20-alpine'
+                    image 'mcr.microsoft.com/playwright:v1.46.0-jammy'
                     reuseNode true
                 }
             }
