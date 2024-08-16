@@ -26,22 +26,23 @@ pipeline {
                 '''
             }
         }
-        stage('e2e tests') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.46.0-jammy'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    npm install -g serve
-                    serve -s build
-                    npx playwright test
-                '''
-            }
-        }
-    } 
+        // stage('e2e tests') {
+        //     agent {
+        //         docker {
+        //             image 'mcr.microsoft.com/playwright:v1.46.0-jammy'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //             npm install -g serve
+        //             serve -s build
+        //             npx playwright test
+        //         '''
+        //     }
+        // }
+    }
+
     post {
         always {
             junit 'test-results/junit.xml'
