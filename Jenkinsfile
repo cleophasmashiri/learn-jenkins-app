@@ -35,10 +35,10 @@ pipeline {
             }
             steps {
                 sh '''
-                echo "Test"
-        //             npm install -g serve
-        //             serve -s build
-        //             npx playwright test
+                    echo "Test"
+                    npm install -g serve
+                    serve -s build
+                    npx playwright test
                 '''
             }
         }
