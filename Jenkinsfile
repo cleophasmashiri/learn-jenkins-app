@@ -33,13 +33,14 @@ pipeline {
                     reuseNode true
                 }
             }
-        //     steps {
-        //         sh '''
+            steps {
+                sh '''
+                echo "Test"
         //             npm install -g serve
         //             serve -s build
         //             npx playwright test
-        //         '''
-        //     }
+                '''
+            }
         }
     }
 
