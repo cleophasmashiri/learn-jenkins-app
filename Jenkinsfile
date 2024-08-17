@@ -1,9 +1,8 @@
 pipeline {
     agent any
     environment {
-        NETLIFY_SITE_ID = "21edc252-3633-48c1-a4b7-65513116db6d"
+        NETLIFY_SITE_ID = '21edc252-3633-48c1-a4b7-65513116db6d'
         NETLIFY_AUTH_TOKEN = credentials('netlify')
-
     }
     stages {
         stage('Build') {
@@ -84,6 +83,26 @@ pipeline {
                 '''
             }
         }
+        stage('Prod e2e tests') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            reuseNode true
+                        }
+                    }
+                    environment {
+                        CI_ENVIRONMENT_URL = 'https://polite-dieffenbachia-f572a7.netlify.app'
+                    }
+                    steps {
+                        sh '''
+                        npx playwright test --reporter=html
+                        '''
+                    }
+                    post {
+                        always {
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'e2e-report', reportTitles: '', useWrapperFileDirectly: true])
+                        }
+                    }
+        }
     }
-
 }
