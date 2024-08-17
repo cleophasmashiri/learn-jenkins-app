@@ -60,7 +60,7 @@ pipeline {
                     }
                     post {
                         always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-dev-report', reportFiles: 'index.html', reportName: 'dev-e2e-report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-dev-report', reportFiles: 'index.html', reportName: 'e2e-report', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                 }
@@ -122,7 +122,7 @@ pipeline {
                     }
                     post {
                         always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-prod-report', reportFiles: 'index.html', reportName: 'prod-e2e-report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-prod-report', reportFiles: 'index.html', reportName: 'e2e-report', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
         }
