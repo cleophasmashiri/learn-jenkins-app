@@ -83,7 +83,7 @@ pipeline {
                 '''
             }
         }
-        stage(''Approval) {
+        stage('Approval') {
             steps {
                 input message: 'Are you ready to deploy', ok: 'Yes'
             }
