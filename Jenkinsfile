@@ -94,7 +94,7 @@ pipeline {
                 }
             }
             environment {
-                CI_ENVIRONMENT_URL = "Fake"
+                CI_ENVIRONMENT_URL = 'Fake'
             }
             steps {
                 sh '''
