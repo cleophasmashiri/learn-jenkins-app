@@ -99,6 +99,7 @@ pipeline {
             }
             steps {
                 sh '''
+                echo "STAGING_URL ${env.STAGING_URL}"
                 npx playwright test --reporter=html
                 '''
             }
