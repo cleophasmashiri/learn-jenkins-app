@@ -66,27 +66,27 @@ pipeline {
                 }
             }
         }
-         stage('Deploy Staging') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                   npm install netlify-cli node-jq
-                   echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
-                   node_modules/.bin/netlify status
-                   node_modules/.bin/netlify deploy --dir=build
-                   node_modules/.bin/netlify deploy --dir=build --json > staging.json
-                '''
-                script {
-                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' staging.json", returnStdout: true)
-                }
-            }
-        }
-        stage('Staging e2e tests') {
+        // stage('Deploy Staging') {
+        //     agent {
+        //         docker {
+        //             image 'node:18-alpine'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //            npm install netlify-cli node-jq
+        //            echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
+        //            node_modules/.bin/netlify status
+        //            node_modules/.bin/netlify deploy --dir=build
+        //            node_modules/.bin/netlify deploy --dir=build --json > staging.json
+        //         '''
+        //         script {
+        //             env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' staging.json", returnStdout: true)
+        //         }
+        //     }
+        // }
+        stage('Deploy Staging') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -94,10 +94,16 @@ pipeline {
                 }
             }
             environment {
-                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+                CI_ENVIRONMENT_URL = ""
             }
             steps {
                 sh '''
+                npm install netlify-cli node-jq
+                echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
+                node_modules/.bin/netlify status
+                node_modules/.bin/netlify deploy --dir=build
+                node_modules/.bin/netlify deploy --dir=build --json > staging.json
+                CI_ENVIRONMENT_URL = $(node_modules/.bin/node-jq -r '.deploy_url' staging.json)
                 echo "STAGING_URL $CI_ENVIRONMENT_URL"
                 npx playwright test --reporter=html
                 '''
@@ -131,30 +137,30 @@ pipeline {
         //     }
         // }
         stage('Prod Deploy') {
-                    agent {
-                        docker {
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                            reuseNode true
-                        }
-                    }
-                    environment {
-                        CI_ENVIRONMENT_URL = 'https://polite-dieffenbachia-f572a7.netlify.app'
-                    }
-                    steps {
-                        sh '''
-                        npm install netlify-cli
-                        node_modules/.bin/netlify --version
-                        echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
-                        node_modules/.bin/netlify status
-                        node_modules/.bin/netlify deploy --dir=build --prod
-                        npx playwright test --reporter=html
-                        '''
-                    }
-                    post {
-                        always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'prod-report', reportTitles: '', useWrapperFileDirectly: true])
-                        }
-                    }
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            environment {
+                CI_ENVIRONMENT_URL = 'https://polite-dieffenbachia-f572a7.netlify.app'
+            }
+            steps {
+                sh '''
+                npm install netlify-cli
+                node_modules/.bin/netlify --version
+                echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
+                node_modules/.bin/netlify status
+                node_modules/.bin/netlify deploy --dir=build --prod
+                npx playwright test --reporter=html
+                '''
+            }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'prod-report', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
         }
     }
 }
