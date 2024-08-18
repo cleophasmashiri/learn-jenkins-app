@@ -104,7 +104,6 @@ pipeline {
                 node_modules/.bin/netlify deploy --dir=build
                 node_modules/.bin/netlify deploy --dir=build --json > staging.json
                 CI_ENVIRONMENT_URL = $(node_modules/.bin/node-jq -r '.deploy_url' staging.json)
-                echo "STAGING_URL $CI_ENVIRONMENT_URL"
                 npx playwright test --reporter=html
                 '''
             }
