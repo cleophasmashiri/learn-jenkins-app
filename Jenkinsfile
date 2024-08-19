@@ -5,13 +5,6 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('netlify')
     }
     stages {
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                    docker build -t my-playwright .
-                '''
-            }
-        }
         stage('Build') {
             agent {
                 docker {

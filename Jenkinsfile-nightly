@@ -1,0 +1,11 @@
+pipeline {
+    stages {
+        stage('Build playright image') {
+           steps {
+             sh '''
+                docker build -t my-playwright .
+            '''
+           }
+        }
+    }
+}
