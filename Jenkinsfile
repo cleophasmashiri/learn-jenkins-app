@@ -22,6 +22,13 @@ pipeline {
                 '''
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    docker build -t my-playwright .
+                '''
+            }
+        }
         stage('Running Testing') {
             parallel {
                 stage('Testing') {
