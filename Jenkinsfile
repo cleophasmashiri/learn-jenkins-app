@@ -5,10 +5,17 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('netlify')
     }
     stages {
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    docker build -t my-playwright .
+                '''
+            }
+        }
         stage('Build') {
             agent {
                 docker {
-                    image 'node:18-alpine'
+                    image 'my-playwright'
                     reuseNode true
                 }
             }
@@ -22,19 +29,12 @@ pipeline {
                 '''
             }
         }
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                    docker build -t my-playwright .
-                '''
-            }
-        }
         stage('Running Testing') {
             parallel {
                 stage('Testing') {
                     agent {
                         docker {
-                            image 'node:18-alpine'
+                            image 'my-playwright'
                             reuseNode true
                         }
                     }
@@ -53,14 +53,13 @@ pipeline {
                 stage('e2e tests') {
                     agent {
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            image 'my-playwright'
                             reuseNode true
                         }
                     }
                     steps {
                         sh '''
-                        npm install serve
-                        node_modules/.bin/serve -s build &
+                        serve -s build &
                         sleep 10
                         npx playwright test --reporter=html
                         '''
@@ -96,7 +95,7 @@ pipeline {
         stage('Deploy Staging') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-playwright'
                     reuseNode true
                 }
             }
@@ -105,11 +104,10 @@ pipeline {
             }
             steps {
                 sh '''
-                npm install netlify-cli node-jq
                 echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
-                node_modules/.bin/netlify status
-                node_modules/.bin/netlify deploy --dir=build
-                node_modules/.bin/netlify deploy --dir=build --json > staging.json
+                netlify status
+                netlify deploy --dir=build
+                netlify deploy --dir=build --json > staging.json
                 CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' staging.json)
                 npx playwright test --reporter=html
                 '''
@@ -122,7 +120,9 @@ pipeline {
         }
         stage('Approval') {
             steps {
-                input message: 'Are you ready to deploy', ok: 'Yes'
+                timeout(activity: true, time: 10) {
+                    input message: 'Are you ready to deploy', ok: 'Yes'
+                }
             }
         }
         // stage('Deploy Prod') {
@@ -145,7 +145,7 @@ pipeline {
         stage('Prod Deploy') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-playwright'
                     reuseNode true
                 }
             }
@@ -154,11 +154,10 @@ pipeline {
             }
             steps {
                 sh '''
-                npm install netlify-cli
-                node_modules/.bin/netlify --version
+                netlify --version
                 echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
-                node_modules/.bin/netlify status
-                node_modules/.bin/netlify deploy --dir=build --prod
+                netlify status
+                netlify deploy --dir=build --prod
                 npx playwright test --reporter=html
                 '''
             }
