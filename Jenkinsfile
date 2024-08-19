@@ -143,7 +143,7 @@ pipeline {
                 }
             }
             environment {
-                $S3_BUCKET_NAME = 'my-webapp-2121'
+                S3_BUCKET_NAME = 'my-webapp-2121'
                 CI_ENVIRONMENT_URL = 'http://my-webapp-2121.s3-website.eu-north-1.amazonaws.com'
             }
             steps {
