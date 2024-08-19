@@ -147,11 +147,11 @@ pipeline {
                 CI_ENVIRONMENT_URL = 'http://my-webapp-2121.s3-website.eu-north-1.amazonaws.com'
             }
             steps {
-                sh '''
                 withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    aws s3 sync build s3://$S3_BUCKET_NAME
+                    sh '''
+                         aws s3 sync build s3://$S3_BUCKET_NAME
+                        '''
                 }
-                '''
             }
             post {
                 always {
@@ -160,30 +160,30 @@ pipeline {
             }
         }
 
-        // stage('Prod Deploy') {
-        //     agent {
-        //         docker {
-        //             image 'my-playwright'
-        //             reuseNode true
-        //         }
-        //     }
-        //     environment {
-        //         CI_ENVIRONMENT_URL = 'https://polite-dieffenbachia-f572a7.netlify.app'
-        //     }
-        //     steps {
-        //         sh '''
-        //         netlify --version
-        //         echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
-        //         netlify status
-        //         netlify deploy --dir=build --prod
-        //         npx playwright test --reporter=html
-        //         '''
-        //     }
-        //     post {
-        //         always {
-        //             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'prod-report', reportTitles: '', useWrapperFileDirectly: true])
-        //         }
-        //     }
-        // }
+    // stage('Prod Deploy') {
+    //     agent {
+    //         docker {
+    //             image 'my-playwright'
+    //             reuseNode true
+    //         }
+    //     }
+    //     environment {
+    //         CI_ENVIRONMENT_URL = 'https://polite-dieffenbachia-f572a7.netlify.app'
+    //     }
+    //     steps {
+    //         sh '''
+    //         netlify --version
+    //         echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
+    //         netlify status
+    //         netlify deploy --dir=build --prod
+    //         npx playwright test --reporter=html
+    //         '''
+    //     }
+    //     post {
+    //         always {
+    //             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'prod-report', reportTitles: '', useWrapperFileDirectly: true])
+    //         }
+    //     }
+    // }
     }
 }
